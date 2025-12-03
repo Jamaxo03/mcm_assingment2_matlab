@@ -28,6 +28,34 @@ classdef kinematicModel < handle
             % bJi
             
             %TO DO
+            bJi = zeros(6,i);
+
+            for j = 1:i
+
+                if (self.gm.jointType(j) == 1)
+
+                    bJi(:,j) = [0; 0; 0; 0; 0; 1];
+
+                end
+
+                if (self.gm.jointType(j) == 0)
+
+                    bTn = self.gm.getTransformWrtBase(self.gm.jointNumber);
+                    brn = bTn(1:3,4);
+                    bTj = self.gm.getTransformWrtBase(j);
+                    brj = bTj(1:3,4);
+                    jrn = brn - brj;
+
+                    SM = [0 -1  0;
+                          1  0  0;
+                          0  0  0];
+
+                    JL = SM * jrn;
+
+                    bJi(:,j) = [0; 0; 1; JL];
+                end
+            end
+
         end
 
         function updateJacobian(self)

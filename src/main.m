@@ -13,6 +13,17 @@ geometricModel = geometricModel(iTj_0,jointType);
 
 %% Q1.3
 
+bTe = geometricModel.getTransformWrtBase(7);
+disp('bTe')
+disp(bTe);
+
+bT2 = geometricModel.getTransformWrtBase(2);
+bT6 = geometricModel.getTransformWrtBase(6);
+
+T_6_2 = inv(bT6) * bT2;
+disp('6T2')
+disp(T_6_2);
+
 %% Q1.4 Simulation
 % Given the following configurations compute the Direct Geometry for the manipulator
 
@@ -32,7 +43,7 @@ disp(bTe)
 show_simulation = true;
 
 % Set initial and final joint positions
-qf = [5*pi/12, -pi/3, 0, -pi/4, 0, 0.18, pi/5];
+qf = [5*pi/12, -pi/4, 0, -pi/4, 0, 0.18, pi/5];
 
 %%%%%%%%%%%%% SIMULATION LOOP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation variables
