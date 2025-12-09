@@ -90,6 +90,37 @@ pm.plotFinalConfig(bTi)
 %% Q1.5
 km = kinematicModel(geometricModel);
 
+bJ6 = km.getJacobianOfLinkWrtBase(6);
+disp('bJ6')
+disp(bJ6);
+
 %% Q1.6
+km.updateJacobian();
+
+J = km.J;
+disp('J')
+disp(J);
 
 %% Q1.7
+
+% il nostro frame dell' end-effector coincide con il frame del 7 joint
+% pertanto r_e/n = 0
+
+q = [0.7, -0.1, 1, -1, 0, 0.03, 1.3];
+geometricModel.updateDirectGeometry(q);
+
+km2 = kinematicModel(geometricModel);
+km2.updateJacobian();
+
+q_dot = [0.9; 0.1; -0.2; 0.3; -0.8; 0.5; 0];
+
+ni = km2.J * q_dot;
+
+omega = ni(1:3);
+v = ni(4:6);
+
+disp('omega')
+disp(omega);
+
+disp('v')
+disp(v);

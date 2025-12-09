@@ -65,7 +65,8 @@ classdef kinematicModel < handle
 
             % TO DO
 
-            
+            self.J = self.getJacobianOfLinkWrtBase(self.gm.jointNumber);
+
         end
     end
 end
