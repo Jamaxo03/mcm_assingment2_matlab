@@ -103,8 +103,7 @@ disp(J);
 
 %% Q1.7
 
-% il nostro frame dell' end-effector coincide con il frame del 7 joint
-% pertanto r_e/n = 0
+% end-effector frame = 7th joint frame -> r_e/n = 0
 
 q = [0.7, -0.1, 1, -1, 0, 0.03, 1.3];
 geometricModel.updateDirectGeometry(q);
@@ -119,8 +118,22 @@ ni = km2.J * q_dot;
 omega = ni(1:3);
 v = ni(4:6);
 
-disp('omega')
+% -------------------------- Additional part ------------------------------
+% <to project velocities on end-effector frame>
+
+% transformation from base to end-effector
+bTe = geometricModel.getTransformWrtBase(7);
+bRe = bTe(1:3,1:3);
+bre = bTe(1:3,4);
+% angular velocity of EE relative ti base frame projected on EE frame 
+omega_e = bRe.' * omega; 
+% linear velocity of EE relative ti base frame projected on EE frame 
+v_e = bRe.' * (v - cross(omega,bre));
+
+% -------------------------- Additional part ------------------------------
+
+disp('omega_e')
 disp(omega);
 
-disp('v')
+disp('v_e')
 disp(v);

@@ -28,34 +28,66 @@ classdef kinematicModel < handle
             % bJi
             
             %TO DO
+            %------------------------ Old version -------------------------
+            % bJi = zeros(6,i);
+            % 
+            % for j = 1:i
+            % 
+            %     if (self.gm.jointType(j) == 1)
+            % 
+            %         bJi(:,j) = [0; 0; 0; 0; 0; 1];
+            % 
+            %     end
+            % 
+            %     if (self.gm.jointType(j) == 0)
+            % 
+            %         bTj = self.gm.getTransformWrtBase(j);
+            %         brj = bTj(1:3,4);
+            % 
+            %         SM = [0 -1  0;
+            %               1  0  0;
+            %               0  0  0];
+            % 
+            %         JL = SM * brj;
+            % 
+            %         bJi(:,j) = [0; 0; 1; JL];
+            %     end
+            % end
+            %------------------------ Old version -------------------------
+            %------------------------ New version -------------------------
             bJi = zeros(6,i);
 
+            bTi = self.gm.getTransformWrtBase(i);
+            % position of link i (point of interest) relative to base frame
+            bri = bTi(1:3,4);
+
             for j = 1:i
+                
+                bTj = self.gm.getTransformWrtBase(j);
+                % position of link j relative to base frame
+                brj = bTj(1:3,4);
+
+                % axis z of joint j expressed in base frame
+                % <taking into account eventual rotations of the joint>
+                zj = bTj(1:3,3);
 
                 if (self.gm.jointType(j) == 1)
 
-                    bJi(:,j) = [0; 0; 0; 0; 0; 1];
+                    JL = zj;
+                    bJi(:,j) = [0; 0; 0; JL];
 
                 end
 
                 if (self.gm.jointType(j) == 0)
+ 
+                    JA = zj; % angular jacobian
+                    JL = cross(zj,bri - brj); % linear jacobian
+                    % <JL simply that's how is the formula>
+                    bJi(:,j) = [JA; JL];
 
-                    bTn = self.gm.getTransformWrtBase(self.gm.jointNumber);
-                    brn = bTn(1:3,4);
-                    bTj = self.gm.getTransformWrtBase(j);
-                    brj = bTj(1:3,4);
-                    jrn = brn - brj;
-
-                    SM = [0 -1  0;
-                          1  0  0;
-                          0  0  0];
-
-                    JL = SM * jrn;
-
-                    bJi(:,j) = [0; 0; 1; JL];
                 end
             end
-
+            %------------------------ New version -------------------------
         end
 
         function updateJacobian(self)
