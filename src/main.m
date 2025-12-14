@@ -76,7 +76,7 @@ for i = 1:samples
     bTe = geometricModel.getTransformWrtBase(length(jointType)); 
 
     %% ... Plot the motion of the robot 
-    TODO: Il commento indica un plot ogni 0.1s, ma la condizione non lo implementa correttamente.
+    
 
     if (rem(i,0.1) == 0) % only every 0.1 sec
         for j=1:geometricModel.jointNumber
@@ -92,8 +92,6 @@ pm.plotFinalConfig(bTi)
 %% Q1.5
 km = kinematicModel(geometricModel);
 
-FIXME: Il Jacobiano del link 6 non è affidabile a causa di errori nel calcolo del Jacobiano.
-TODO: Nel report va spiegato il metodo teorico corretto per il Jacobiano del link.
 
 bJ6 = km.getJacobianOfLinkWrtBase(6);
 disp('bJ6')
@@ -102,17 +100,13 @@ disp(bJ6);
 %% Q1.6
 km.updateJacobian();
 
-FIXME: Il Jacobiano dell’end-effector eredita gli errori del Jacobiano di link generico.
-TODO: Nel report spiegare la differenza tra Jacobiano di link e Jacobiano dell’end-effector.
-
 J = km.J;
 disp('J')
 disp(J);
 
 %% Q1.7
 
-% il nostro frame dell' end-effector coincide con il frame del 7 joint
-% pertanto r_e/n = 0
+% end-effector frame = 7th joint frame -> r_e/n = 0
 
 q = [0.7, -0.1, 1, -1, 0, 0.03, 1.3];
 geometricModel.updateDirectGeometry(q);
@@ -122,18 +116,28 @@ km2.updateJacobian();
 
 q_dot = [0.9; 0.1; -0.2; 0.3; -0.8; 0.5; 0];
 
-FIXME: Le velocità dell’end-effector sono calcolate nel frame base. È richiesta la proiezione delle velocità nel frame dell’end-effector.
-
 ni = km2.J * q_dot;
-
-TODO: Dichiarare esplicitamente la convenzione usata per il Jacobiano ([v; omega] o [omega; v]).
-FIXME: L’estrazione corrente assume implicitamente una convenzione non dichiarata.
 
 omega = ni(1:3);
 v = ni(4:6);
 
-disp('omega')
-disp(omega);
+% <to project velocities on end-effector frame>
 
-disp('v')
-disp(v);
+% transformation from base to end-effector
+bTe = geometricModel.getTransformWrtBase(7);
+bRe = bTe(1:3,1:3);
+bre = bTe(1:3,4);
+% angular velocity of EE relative ti base frame projected on EE frame 
+omega_e = bRe.' * omega; 
+% linear velocity of EE relative ti base frame projected on EE frame 
+v_e = bRe.' * (v - cross(omega,bre));
+v_e2 = bRe.' * v;
+
+disp('omega_e')
+disp(omega_e);
+
+disp('v_e')
+disp(v_e);
+
+disp('v_e2')
+disp(v_e2);
