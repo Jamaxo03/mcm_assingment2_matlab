@@ -130,8 +130,7 @@ bre = bTe(1:3,4);
 % angular velocity of EE relative ti base frame projected on EE frame 
 omega_e = bRe.' * omega; 
 % linear velocity of EE relative ti base frame projected on EE frame 
-v_e = bRe.' * (v - cross(omega,bre));
-v_e2 = bRe.' * v;
+v_e = bRe.' * v;
 
 disp('omega_e')
 disp(omega_e);
@@ -139,5 +138,9 @@ disp(omega_e);
 disp('v_e')
 disp(v_e);
 
-disp('v_e2')
-disp(v_e2);
+% NOTE: Il Jacobiano è calcolato nel punto dell’end-effector, quindi le
+% velocità lineare e angolare ottenute da J*q_dot rappresentano già le
+% velocità dell’end-effector espresse nel frame base. Per esprimerle nel
+% frame dell’end-effector è sufficiente applicare la rotazione R_be^T.
+% Il termine di trasporto (omega x p) è stato rimosso perché non avviene
+% alcun cambio di punto di applicazione della velocità.
