@@ -118,7 +118,6 @@ ni = km2.J * q_dot;
 omega = ni(1:3);
 v = ni(4:6);
 
-% -------------------------- Additional part ------------------------------
 % <to project velocities on end-effector frame>
 
 % transformation from base to end-effector
@@ -129,11 +128,13 @@ bre = bTe(1:3,4);
 omega_e = bRe.' * omega; 
 % linear velocity of EE relative ti base frame projected on EE frame 
 v_e = bRe.' * (v - cross(omega,bre));
-
-% -------------------------- Additional part ------------------------------
+v_e2 = bRe.' * v;
 
 disp('omega_e')
-disp(omega);
+disp(omega_e);
 
 disp('v_e')
-disp(v);
+disp(v_e);
+
+disp('v_e2')
+disp(v_e2);

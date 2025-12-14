@@ -28,33 +28,7 @@ classdef kinematicModel < handle
             % bJi
             
             %TO DO
-            %------------------------ Old version -------------------------
-            % bJi = zeros(6,i);
-            % 
-            % for j = 1:i
-            % 
-            %     if (self.gm.jointType(j) == 1)
-            % 
-            %         bJi(:,j) = [0; 0; 0; 0; 0; 1];
-            % 
-            %     end
-            % 
-            %     if (self.gm.jointType(j) == 0)
-            % 
-            %         bTj = self.gm.getTransformWrtBase(j);
-            %         brj = bTj(1:3,4);
-            % 
-            %         SM = [0 -1  0;
-            %               1  0  0;
-            %               0  0  0];
-            % 
-            %         JL = SM * brj;
-            % 
-            %         bJi(:,j) = [0; 0; 1; JL];
-            %     end
-            % end
-            %------------------------ Old version -------------------------
-            %------------------------ New version -------------------------
+     
             bJi = zeros(6,i);
 
             bTi = self.gm.getTransformWrtBase(i);
@@ -64,8 +38,6 @@ classdef kinematicModel < handle
             for j = 1:i
                 
                 bTj = self.gm.getTransformWrtBase(j);
-                % position of link j relative to base frame
-                brj = bTj(1:3,4);
 
                 % axis z of joint j expressed in base frame
                 % <taking into account eventual rotations of the joint>
@@ -79,6 +51,8 @@ classdef kinematicModel < handle
                 end
 
                 if (self.gm.jointType(j) == 0)
+                    % position of link j relative to base frame
+                    brj = bTj(1:3,4);
  
                     JA = zj; % angular jacobian
                     JL = cross(zj,bri - brj); % linear jacobian
@@ -87,7 +61,6 @@ classdef kinematicModel < handle
 
                 end
             end
-            %------------------------ New version -------------------------
         end
 
         function updateJacobian(self)
