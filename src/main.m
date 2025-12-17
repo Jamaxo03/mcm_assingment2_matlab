@@ -118,29 +118,22 @@ q_dot = [0.9; 0.1; -0.2; 0.3; -0.8; 0.5; 0];
 
 ni = km2.J * q_dot;
 
-omega = ni(1:3);
-v = ni(4:6);
-
-% <to project velocities on end-effector frame>
-
 % transformation from base to end-effector
 bTe = geometricModel.getTransformWrtBase(7);
 bRe = bTe(1:3,1:3);
-bre = bTe(1:3,4);
-% angular velocity of EE relative ti base frame projected on EE frame 
-omega_e = bRe.' * omega; 
-% linear velocity of EE relative ti base frame projected on EE frame 
-v_e = bRe.' * v;
+r = bTe(1:3,4);
 
-disp('omega_e')
-disp(omega_e);
+r_cross = [0 -r(3) r(2); r(3) 0 -r(1); -r(2) r(1) 0];
 
-disp('v_e')
-disp(v_e);
+ad_joint = inv([bRe, zeros(3); r_cross * bRe, bRe]);
 
-% NOTE: Il Jacobiano è calcolato nel punto dell’end-effector, quindi le
-% velocità lineare e angolare ottenute da J*q_dot rappresentano già le
-% velocità dell’end-effector espresse nel frame base. Per esprimerle nel
-% frame dell’end-effector è sufficiente applicare la rotazione R_be^T.
-% Il termine di trasporto (omega x p) è stato rimosso perché non avviene
-% alcun cambio di punto di applicazione della velocità.
+ni_e = ad_joint * ni;
+
+omega = ni_e(1:3);
+v = ni_e(4:6);
+
+disp('omega')
+disp(omega);
+
+disp('v')
+disp(v);
